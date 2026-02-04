@@ -50,50 +50,69 @@ export class AuditRunner {
     // Step 4: Run the audit via a single comprehensive message
     // Include the repo URL so the agent can clone it
     const repoUrl = `https://github.com/${project.repo}`;
-    await this.sendMessage(sessionId, `IMPORTANT: Call tools immediately - do NOT just describe what you will do.
+    await this.sendMessage(sessionId, `You are auditing a smart contract repository. Execute tools sequentially - WAIT for each tool to complete before proceeding.
 
-Run a comprehensive security audit on this GitHub repository: ${repoUrl}
+Repository: ${repoUrl}
 
-Execute these steps in order:
+## PHASE 1: Setup (Execute in order, wait for each)
 
-STEP 1 - Clone repository:
-cloneRepository({ url: "${repoUrl}" })
+1. cloneRepository({ url: "${repoUrl}" })
+   → Wait for "cloned successfully" before continuing
 
-STEP 2 - Detect project type:
-detectProjectType({})
+2. detectProjectType({})
+   → Note the framework (foundry/hardhat)
 
-STEP 3 - Install dependencies:
-installDependencies({})
+3. installDependencies({})
+   → Wait for compilation to succeed
 
-STEP 4 - Run static analysis:
-runSlither({})
-runAderyn({})
+## PHASE 2: Static Analysis (REQUIRED - Do not skip)
 
-STEP 5 - Analyze findings:
-Review the Slither and Aderyn results. For each real vulnerability:
-- Use readContract to examine the vulnerable code
-- Verify it's a real issue, not a false positive
+4. runSlither({})
+   → WAIT for complete output
+   → List ALL detectors that triggered findings
+   → Note file paths and line numbers
 
-STEP 6 - Create findings:
-For each confirmed vulnerability, use createFinding with:
-- severity: "high", "medium", or "low"
-- title: Brief description of the vulnerability
-- description: Full explanation with code location
-- recommendation: How to fix it
-- analysisProcess: Array of steps you took to find this (e.g., ["ran slither", "reviewed tainted variables", "verified exploit path"])
-- tools: Tools you used (e.g., ["slither", "manual review"])
-- methods: Analysis methods applied (e.g., ["taint analysis", "control flow"])
-- severityReasoning: Why you assigned this severity level
+5. runAderyn({})
+   → WAIT for complete output
+   → Note all issues found
 
-Focus on HIGH and MEDIUM severity issues:
-- Reentrancy attacks
-- Access control bypasses
-- Integer overflow/underflow
-- Oracle/price manipulation
-- Token handling issues
-- Logic errors
+## PHASE 3: Finding Analysis
 
-START NOW by calling cloneRepository.
+For EACH static analysis finding (Slither/Aderyn):
+- readContract to examine the code
+- Determine: Is this a TRUE issue or false positive?
+- If TRUE issue: proceed to create finding
+- If false positive: note why and skip
+
+## PHASE 4: Business Logic Review
+
+After static analysis, manually review for:
+- **Accounting bugs**: Do balances always reconcile? Can users withdraw more than deposited?
+- **State machine errors**: Can states become inconsistent? Missing state transitions?
+- **Access control**: Who can call sensitive functions? Can permissions be bypassed?
+- **Timing issues**: Timestamp comparisons, block number dependencies
+- **Economic attacks**: Flash loans, price manipulation, incentive misalignment
+
+## PHASE 5: Create Findings
+
+For each confirmed vulnerability, call createFinding with ALL fields:
+- severity: "high" | "medium" | "low"
+- title: Brief vulnerability name
+- description: Full explanation with exact code location (file:line)
+- recommendation: How to fix
+- analysisProcess: ["ran slither", "detector: reentrancy-eth triggered", "verified via readContract"] (REQUIRED)
+- tools: ["slither"] or ["slither", "aderyn", "manual"] (REQUIRED - never empty)
+- methods: ["static-analysis", "data-flow", "manual-review"] (REQUIRED)
+- severityReasoning: "High because X can steal Y funds by doing Z"
+
+## CRITICAL RULES
+
+1. DO NOT skip static analysis - run BOTH Slither and Aderyn
+2. DO NOT create findings without analysisProcess/tools/methods populated
+3. DO NOT proceed to next phase until current phase tools return results
+4. Focus on HIGH and MEDIUM severity - ignore gas optimizations and informational
+
+START NOW: Call cloneRepository and wait for it to complete.
     `);
 
     // Step 5: Retrieve findings from project
