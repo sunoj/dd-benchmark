@@ -1,0 +1,36 @@
+# Benchmark System Settings
+#
+# Pure data collection tool. Responsibilities:
+# - Run DD audits on projects
+# - Collect ground truth findings from C4
+# - Collect DD findings with analysis metadata
+#
+# NOT responsible for:
+# - Matching findings - Super-CC's job
+# - Score calculation - Super-CC's job
+# - Comparing results - Super-CC's job
+# - Suggestions/recommendations - Super-CC's job
+
+scheduler:
+  # Maximum concurrent project audits
+  max_concurrent_projects: 1
+
+  # Checkpoint interval (seconds) - save state for resume
+  checkpoint_interval: 300
+
+  # Timeout for single audit run (seconds)
+  audit_timeout: 3600  # 1 hour
+
+  # Retry failed audits
+  max_retries: 3
+  retry_delay: 60  # seconds
+
+github:
+  # Organization to fetch projects from
+  organization: code-423n4
+
+  # Pattern to match project names (regex)
+  project_pattern: "202[5-6]-\\d{2}-"
+
+  # Only fetch projects with findings
+  require_findings: true

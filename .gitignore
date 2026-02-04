@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment
+.env
+.env.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test coverage
+coverage/
+
+# Temp files
+*.tmp
+*.temp
+
+# Run data (local results, not tracked)
+data/runs/*
+!data/runs/.gitkeep
+
+# Ground truth cache (local, not tracked)
+data/ground-truth/*
+!data/ground-truth/.gitkeep
+
+# Legacy directories
+benchmark/

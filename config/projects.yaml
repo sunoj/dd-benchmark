@@ -1,0 +1,411 @@
+# C4 Projects for Benchmarking
+# Status: pending | queued | running | completed | failed | skipped
+# Projects with C4 reports or findings files are prioritized
+
+projects:
+  # === PROJECTS WITH C4 REPORTS (Best for benchmarking) ===
+
+  # LoopFi - High finding count (10H, 21M)
+  - name: 2024-07-loopfi
+    repo: code-423n4/2024-07-loopfi
+    status: pending
+    priority: 1
+    has_c4_report: true
+    report_url: https://code4rena.com/reports/2024-07-loopfi
+    scope_file: scope.txt
+    framework: foundry
+    notes: "Prize: $100,000 - 10 High, 21 Medium findings"
+
+  # Panoptic - Options protocol (2H, 6M)
+  - name: 2024-04-panoptic
+    repo: code-423n4/2024-04-panoptic
+    status: pending
+    priority: 2
+    has_c4_report: true
+    report_url: https://code4rena.com/reports/2024-04-panoptic
+    scope_file: scope.txt
+    framework: foundry
+    notes: "Prize: $120,000 - 2 High, 6 Medium findings"
+
+  # Wildcat (1H, 5M)
+  - name: 2024-08-wildcat
+    repo: code-423n4/2024-08-wildcat
+    status: pending
+    priority: 3
+    has_c4_report: true
+    report_url: https://code4rena.com/reports/2024-08-wildcat
+    scope_file: scope.txt
+    framework: foundry
+    notes: "Prize: $100,000 - 1 High, 5 Medium findings"
+
+  # Silo Finance (0H, 6M)
+  - name: 2025-03-silo-finance
+    repo: code-423n4/2025-03-silo-finance
+    status: pending
+    priority: 4
+    has_c4_report: true
+    report_url: https://code4rena.com/reports/2025-03-silo-finance
+    scope_file: scope.txt
+    framework: foundry
+    notes: "Prize: $50,000 - 6 Medium findings"
+
+  # Morpheus (0H, 4M)
+  - name: 2025-08-morpheus
+    repo: code-423n4/2025-08-morpheus
+    status: pending
+    priority: 5
+    has_c4_report: true
+    report_url: https://code4rena.com/reports/2025-08-morpheus
+    scope_file: scope.txt
+    framework: hardhat
+    notes: "Prize: $20,000 - 4 Medium findings"
+
+  # === PROJECTS WITH GITHUB FINDINGS FILES ===
+
+  # Olas - complex multi-module project with 3 findings files
+  - name: 2026-01-olas
+    repo: code-423n4/2026-01-olas
+    status: pending
+    priority: 10
+    has_findings: true
+    findings_files:
+      - code_423n4_autonolas_v12_governance__main_e7b6039_findings_2026-01-23-findings.md
+      - code_423n4_autonolas_v12_registries_v2__main_d4f7d34_findings_2026-01-23-findings.md
+      - code_423n4_autonolas_v12_tokenomics_v2__main_bbec5ac_findings_2026-01-23-findings.md
+    framework: unknown
+    notes: "Prize: $62,000 - Multiple findings files"
+
+  # Panoptic December 2025
+  - name: 2025-12-panoptic
+    repo: code-423n4/2025-12-panoptic
+    status: pending
+    priority: 11
+    has_findings: true
+    findings_file: 2025_12_panoptic_v12_findings.md
+    scope_file: scope.txt
+    framework: foundry
+    notes: "Prize: $56,000"
+
+  # Sequence
+  - name: 2025-11-sequence
+    repo: code-423n4/2025-11-sequence
+    status: pending
+    priority: 12
+    has_findings: true
+    findings_file: 2025-11-sequence-v12-findings.md
+    scope_file: scope.txt
+    framework: foundry
+    notes: "Prize: $18,500"
+
+  # Garden
+  - name: 2025-11-garden
+    repo: code-423n4/2025-11-garden
+    status: pending
+    priority: 13
+    has_findings: true
+    findings_file: 2025-11-garden-V12-findings.md
+    scope_file: scope.txt
+    framework: unknown
+    notes: "Prize: $37,500"
+
+  # === RECENT PROJECTS (No reports yet - for future) ===
+
+  - name: 2025-12-rujira
+    repo: code-423n4/2025-12-rujira
+    status: pending
+    priority: 20
+    has_findings: false
+    framework: unknown
+    notes: "Prize: $40,000 - Pending report"
+
+  - name: 2025-11-ekubo
+    repo: code-423n4/2025-11-ekubo
+    status: pending
+    priority: 20
+    has_findings: false
+    scope_file: scope.txt
+    framework: foundry
+    notes: "Prize: $183,500 - Pending report"
+
+  - name: 2025-11-swafe
+    repo: code-423n4/2025-11-swafe
+    status: pending
+    priority: 20
+    has_findings: false
+    scope_file: scope.txt
+    framework: unknown
+    notes: "Prize: $100,000 - Pending report"
+
+  - name: 2025-11-megapot
+    repo: code-423n4/2025-11-megapot
+    status: pending
+    priority: 20
+    has_findings: false
+    scope_file: scope.txt
+    framework: hardhat
+    notes: "Prize: $30,000 - Pending report"
+
+  - name: 2025-11-sukukfi
+    repo: code-423n4/2025-11-sukukfi
+    status: pending
+    priority: 20
+    has_findings: false
+    scope_file: scope.txt
+    framework: foundry
+    notes: "Prize: $40,000 - Pending report"
+
+  - name: 2025-11-brix-money
+    repo: code-423n4/2025-11-brix-money
+    status: pending
+    priority: 20
+    has_findings: false
+    scope_file: scope.txt
+    framework: foundry
+    notes: "Prize: $23,000 - Pending report"
+
+  - name: 2025-11-merkl
+    repo: code-423n4/2025-11-merkl
+    status: pending
+    priority: 20
+    has_findings: false
+    scope_file: scope.txt
+    framework: foundry
+    notes: "Prize: $18,000 - Pending report"
+
+  - name: 2025-10-hybra-finance
+    repo: code-423n4/2025-10-hybra-finance
+    status: pending
+    priority: 20
+    has_findings: false
+    scope_file: scope.txt
+    framework: unknown
+    notes: "Prize: $33,000 - Pending report"
+
+  - name: 2025-10-layerzero
+    repo: code-423n4/2025-10-layerzero
+    status: pending
+    priority: 20
+    has_findings: false
+    framework: unknown
+    notes: "Prize: $100,000 - Pending report"
+
+  - name: 2025-10-covenant
+    repo: code-423n4/2025-10-covenant
+    status: pending
+    priority: 20
+    has_findings: false
+    scope_file: scope.txt
+    framework: foundry
+    notes: "Prize: $43,000 - Pending report"
+
+  - name: 2025-10-sequence
+    repo: code-423n4/2025-10-sequence
+    status: pending
+    priority: 20
+    has_findings: false
+    scope_file: scope.txt
+    framework: foundry
+    notes: "Prize: $73,000 - Pending report"
+
+  - name: 2025-09-succinct
+    repo: code-423n4/2025-09-succinct
+    status: pending
+    priority: 20
+    has_findings: false
+    scope_file: scope.txt
+    framework: unknown
+    notes: "Prize: $112,500 - Pending report"
+
+  - name: 2025-09-monad
+    repo: code-423n4/2025-09-monad
+    status: pending
+    priority: 20
+    has_findings: false
+    scope_file: scope.txt
+    framework: unknown
+    notes: "Prize: $504,000 - Pending report"
+
+  - name: 2025-08-gte-perps
+    repo: code-423n4/2025-08-gte-perps
+    status: pending
+    priority: 20
+    has_findings: false
+    scope_file: scope.txt
+    framework: foundry
+    notes: "Prize: $103,250 - Pending report"
+
+  - name: 2025-08-flare
+    repo: code-423n4/2025-08-flare
+    status: pending
+    priority: 20
+    has_findings: false
+    scope_file: scope.txt
+    framework: foundry
+    notes: "Prize: $190,000 - Pending report"
+
+  - name: 2025-07-lido-finance
+    repo: code-423n4/2025-07-lido-finance
+    status: pending
+    priority: 20
+    has_findings: false
+    scope_file: scope.txt
+    framework: foundry
+    notes: "Prize: $103,500 - Pending report"
+
+  - name: 2025-07-gte-clob
+    repo: code-423n4/2025-07-gte-clob
+    status: pending
+    priority: 20
+    has_findings: false
+    scope_file: scope.txt
+    framework: foundry
+    notes: "Prize: $63,250 - Pending report"
+
+  - name: 2025-06-chainlink
+    repo: code-423n4/2025-06-chainlink
+    status: pending
+    priority: 20
+    has_findings: false
+    scope_file: scope.txt
+    framework: foundry
+    notes: "Prize: $200,000 - Pending report"
+
+  - name: 2025-04-forte
+    repo: code-423n4/2025-04-forte
+    status: pending
+    priority: 20
+    has_findings: false
+    scope_file: scope.txt
+    framework: foundry
+    notes: "Prize: $40,000 - Pending report"
+
+  - name: 2025-04-kinetiq
+    repo: code-423n4/2025-04-kinetiq
+    status: pending
+    priority: 20
+    has_findings: false
+    scope_file: scope.txt
+    framework: foundry
+    notes: "Prize: $35,000 - Pending report"
+
+  - name: 2025-04-virtuals-protocol
+    repo: code-423n4/2025-04-virtuals-protocol
+    status: pending
+    priority: 20
+    has_findings: false
+    scope_file: scope.txt
+    framework: hardhat
+    notes: "Prize: $60,000 - Pending report"
+
+  - name: 2025-03-nudgexyz
+    repo: code-423n4/2025-03-nudgexyz
+    status: pending
+    priority: 20
+    has_findings: false
+    scope_file: scope.txt
+    framework: foundry
+    notes: "Prize: $20,000 - Pending report"
+
+  - name: 2025-03-starknet
+    repo: code-423n4/2025-03-starknet
+    status: pending
+    priority: 20
+    has_findings: false
+    scope_file: scope.txt
+    framework: unknown
+    notes: "Prize: $150,000 - Pending report"
+
+  - name: 2025-02-blend
+    repo: code-423n4/2025-02-blend
+    status: pending
+    priority: 20
+    has_findings: false
+    scope_file: scope.txt
+    framework: unknown
+    notes: "Pending report"
+
+  - name: 2025-01-liquid-ron
+    repo: code-423n4/2025-01-liquid-ron
+    status: pending
+    priority: 20
+    has_findings: false
+    scope_file: scope.txt
+    framework: foundry
+    notes: "Prize: $40,000 - Pending report"
+
+  # === OLDER PROJECTS (2024) ===
+
+  - name: 2024-10-superposition
+    repo: code-423n4/2024-10-superposition
+    status: pending
+    priority: 30
+    has_findings: false
+    scope_file: scope.txt
+    framework: unknown
+    notes: "Prize: $21,000"
+
+  - name: 2024-08-phi
+    repo: code-423n4/2024-08-phi
+    status: pending
+    priority: 30
+    has_findings: false
+    scope_file: scope.txt
+    framework: foundry
+    notes: "Prize: $30,000"
+
+  - name: 2024-08-superposition
+    repo: code-423n4/2024-08-superposition
+    status: pending
+    priority: 30
+    has_findings: false
+    scope_file: scope.txt
+    framework: unknown
+    notes: "Prize: $60,750"
+
+  - name: 2024-07-optimism
+    repo: code-423n4/2024-07-optimism
+    status: pending
+    priority: 30
+    has_findings: false
+    framework: unknown
+    notes: "Optimism L2"
+
+  - name: 2024-07-karak
+    repo: code-423n4/2024-07-karak
+    status: pending
+    priority: 30
+    has_findings: false
+    scope_file: scope.txt
+    framework: foundry
+    notes: "Prize: $55,500"
+
+  - name: 2024-07-basin
+    repo: code-423n4/2024-07-basin
+    status: pending
+    priority: 30
+    has_findings: false
+    scope_file: scope.txt
+    framework: foundry
+    notes: "Prize: $37,750"
+
+  - name: 2024-01-opus
+    repo: code-423n4/2024-01-opus
+    status: pending
+    priority: 30
+    has_findings: false
+    framework: unknown
+    notes: "Prize: $100,000"
+
+# Metadata
+metadata:
+  last_updated: "2026-02-03"
+  total_projects: 40
+  with_c4_reports: 5
+  with_findings_files: 4
+  completed_projects: 0
+
+# Index settings
+indexing:
+  auto_discover: true
+  min_year: 2024
+  c4_report_base_url: "https://code4rena.com/reports/"
