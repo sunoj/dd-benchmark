@@ -175,12 +175,17 @@ export class BenchmarkRunner {
 
     const duration = Math.round((Date.now() - startTime) / 1000);
 
+    // Get session logs for analysis
+    const sessionLogs = this.auditRunner.getSessionLogs();
+    console.log(`[Benchmark] Captured ${sessionLogs.length} session messages`);
+
     // Build result with raw data only
     const result = this.buildRunResult(
       project,
       groundTruth,
       ddFindings,
-      duration
+      duration,
+      sessionLogs
     );
 
     // Save result
@@ -198,7 +203,8 @@ export class BenchmarkRunner {
     project: C4Project,
     groundTruth: Finding[],
     ddFindings: Finding[],
-    duration: number
+    duration: number,
+    sessionLogs?: any[]
   ): RunResult {
     // Count ground truth by severity
     const bySeverity: Record<string, number> = {};
@@ -219,7 +225,7 @@ export class BenchmarkRunner {
       }
     }
 
-    return {
+    const result: RunResult = {
       project: project.name,
       timestamp: new Date().toISOString(),
       duration_seconds: duration,
@@ -242,6 +248,13 @@ export class BenchmarkRunner {
         methods_used: Array.from(methodsUsed),
       },
     };
+
+    // Include session logs if available
+    if (sessionLogs && sessionLogs.length > 0) {
+      result.session_logs = sessionLogs;
+    }
+
+    return result;
   }
 
   /**

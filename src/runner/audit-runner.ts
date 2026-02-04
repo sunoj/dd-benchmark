@@ -24,10 +24,16 @@ export class AuditRunner {
   }
 
   /**
+   * Audit result including findings and session logs
+   */
+  public lastSessionLogs: any[] = [];
+
+  /**
    * Run a full DD audit on a project
    */
   async runAudit(project: C4Project): Promise<Finding[]> {
     console.log(`[AuditRunner] Starting audit for ${project.name}`);
+    this.lastSessionLogs = []; // Reset logs for new audit
 
     // Step 1: Create a DD project first
     const projectId = await this.createProject(project);
@@ -309,8 +315,11 @@ START NOW by calling cloneRepository.
 
     const messages = await messagesResponse.json() as Array<{
       role: string;
-      content: Array<{ type: string; text?: string }>;
+      content: Array<{ type: string; text?: string; name?: string; input?: any }>;
     }>;
+
+    // Store the full session logs for later retrieval
+    this.lastSessionLogs = messages;
 
     // Find the last assistant message
     const lastAssistant = [...messages].reverse().find(m => m.role === 'assistant');
@@ -324,8 +333,15 @@ START NOW by calling cloneRepository.
       }
     }
 
-    console.log(`[AuditRunner] Response received (${fullResponse.length} chars)`);
+    console.log(`[AuditRunner] Response received (${fullResponse.length} chars), ${messages.length} messages logged`);
     return fullResponse;
+  }
+
+  /**
+   * Get the session logs from the last audit
+   */
+  getSessionLogs(): any[] {
+    return this.lastSessionLogs;
   }
 
   /**

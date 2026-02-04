@@ -150,7 +150,24 @@ export interface RunResult {
     audit_session_id?: string;
   };
 
+  /** DD session logs for analysis and improvement */
+  session_logs?: SessionMessage[];
+
   error?: string;
+}
+
+/**
+ * Session message from DD audit
+ * Captures the full conversation for analysis
+ */
+export interface SessionMessage {
+  role: 'user' | 'assistant' | 'system';
+  content: Array<{
+    type: string;
+    text?: string;
+    name?: string;
+    input?: any;
+  }>;
 }
 
 /**
