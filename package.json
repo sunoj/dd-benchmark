@@ -14,7 +14,9 @@
     "run": "ts-node src/index.ts run",
     "resume": "ts-node src/index.ts resume",
     "discover": "ts-node src/index.ts discover",
+    "dataset": "ts-node src/dataset/index.ts",
     "test": "jest",
+    "test:dataset": "ts-node src/dataset/index.ts prepare --project=2024-07-loopfi",
     "lint": "eslint src/**/*.ts"
   },
   "dependencies": {

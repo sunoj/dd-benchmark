@@ -5,8 +5,8 @@ Data collection tool for benchmarking DetectionDogs (DD) smart contract security
 ## Overview
 
 DD Benchmark is a **pure data collector** that:
+- Prepares ground truth datasets from C4 audit reports
 - Runs DD audits on C4 projects
-- Collects ground truth from C4 audit findings
 - Collects DD findings with analysis metadata
 - Saves raw results for downstream analysis
 
@@ -18,7 +18,7 @@ DD Benchmark is a **pure data collector** that:
 # As a submodule of Super-CC
 git submodule add https://github.com/AuditWare/dd-benchmark.git dd-benchmark
 cd dd-benchmark
-npm install
+pnpm install
 ```
 
 ## Architecture
@@ -31,10 +31,12 @@ dd-benchmark/
 ├── src/
 │   ├── index.ts           # CLI entry point
 │   ├── types.ts           # TypeScript interfaces
+│   ├── dataset/           # Dataset preparation from C4 reports
 │   ├── indexer/           # C4 project discovery & ground truth
 │   ├── runner/            # DD audit execution
 │   └── scheduler/         # Process control & checkpointing
 └── data/
+    ├── datasets/          # Prepared ground truth datasets
     ├── runs/              # Audit run results (gitignored)
     └── ground-truth/      # Cached ground truth (gitignored)
 ```
@@ -64,20 +66,44 @@ dd-benchmark/
 
 ## Usage
 
-### CLI Commands
+### Dataset Preparation
+
+Prepare ground truth datasets from C4 reports before running benchmarks:
+
+```bash
+# Prepare dataset for a specific project
+pnpm dataset prepare --project=2024-07-loopfi
+
+# Prepare datasets for all projects with C4 reports
+pnpm dataset prepare --with-reports
+
+# Prepare all configured projects
+pnpm dataset prepare --all
+
+# List prepared datasets
+pnpm dataset list
+
+# Show dataset details
+pnpm dataset show --project=2024-07-loopfi
+
+# Check if dataset exists
+pnpm dataset check --project=2024-07-loopfi
+```
+
+### Benchmark CLI Commands
 
 ```bash
 # Run benchmark on all configured projects
-npm run benchmark -- run
+pnpm run benchmark -- run
 
 # Run benchmark on a specific project
-npm run benchmark -- run --project=2024-07-loopfi
+pnpm run benchmark -- run --project=2024-07-loopfi
 
 # Resume interrupted benchmark
-npm run benchmark -- resume
+pnpm run benchmark -- resume
 
 # Discover new C4 projects
-npm run benchmark -- discover
+pnpm run benchmark -- discover
 ```
 
 ### Programmatic API
@@ -93,6 +119,59 @@ console.log(result.dd_findings.total);   // DD findings count
 ```
 
 ## Output Format
+
+### Dataset Format
+
+Prepared datasets are saved to `data/datasets/{project}/`:
+
+```
+data/datasets/2024-07-loopfi/
+├── ground-truth.json    # All findings
+├── metadata.json        # Audit info, source URL, scope
+├── scope.txt            # Files in scope
+└── findings/            # Individual finding markdown files
+    ├── H-01.md
+    ├── H-02.md
+    └── ...
+```
+
+**metadata.json** includes:
+
+```typescript
+interface DatasetMetadata {
+  project: string;
+  repo: string;
+  preparedAt: string;
+  source: string;
+  findingsCount: number;
+  bySeverity: Record<string, number>;
+  
+  // Source code URL (GitHub repo)
+  sourceCodeUrl: string;
+  
+  // Audit description from C4
+  auditDescription?: string;
+  
+  // Contest details
+  contest?: {
+    prize?: string;
+    startDate?: string;
+    endDate?: string;
+    nSLOC?: number;
+  };
+  
+  // Files in scope
+  scope?: string[];
+  
+  // Scope description
+  scopeDescription?: string;
+  
+  framework?: string;
+  notes?: string;
+}
+```
+
+### Run Results Format
 
 Run results are saved to `data/runs/{project}/run-{timestamp}.json`:
 

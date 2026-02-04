@@ -37,5 +37,8 @@ data/runs/*
 data/ground-truth/*
 !data/ground-truth/.gitkeep
 
+# Prepared datasets (local, not tracked)
+data/datasets/
+
 # Legacy directories
 benchmark/
