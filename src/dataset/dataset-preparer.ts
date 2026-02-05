@@ -438,10 +438,13 @@ export class DatasetPreparer {
   }
 
   /**
-   * Enrich findings with content from GitHub findings files
+   * Enrich findings with content from GitHub findings files, or parse them if no findings exist
    */
   private async enrichFromGitHub(project: C4Project, findings: Finding[]): Promise<void> {
     const files = project.findingsFiles || (project.findingsFile ? [project.findingsFile] : []);
+
+    // Determine if we have existing findings from C4 report
+    const hasC4Findings = findings.length > 0;
 
     for (const file of files) {
       try {
@@ -451,37 +454,139 @@ export class DatasetPreparer {
 
         const content = await response.text();
 
-        // Try to match findings by ID and enrich missing fields
-        for (const finding of findings) {
-          const pattern = new RegExp(`\\[${finding.id}\\][\\s\\S]*?(?=\\[[HML]-\\d+\\]|$)`, 'i');
-          const match = content.match(pattern);
-          if (match) {
-            const section = match[0];
+        if (hasC4Findings) {
+          // If we have existing findings from C4 report, enrich them
+          // Try to match findings by ID and enrich missing fields
+          for (const finding of findings) {
+            const pattern = new RegExp(`\\[${finding.id}\\][\\s\\S]*?(?=\\[[HML]-\\d+\\]|$)`, 'i');
+            const match = content.match(pattern);
+            if (match) {
+              const section = match[0];
 
-            if (!finding.description) {
-              finding.description = this.extractSection(section, ['description', 'summary', 'detail']);
-            }
-            if (!finding.impact) {
-              finding.impact = this.extractSection(section, ['impact']);
-            }
-            if (!finding.rootCause) {
-              finding.rootCause = this.extractSection(section, ['root cause', 'proof of concept', 'poc']);
-            }
-            if (!finding.recommendation) {
-              finding.recommendation = this.extractSection(section, ['recommendation', 'mitigation', 'fix']);
-            }
-            if (finding.targets?.length === 0) {
-              finding.targets = this.extractAffectedFiles(section);
-            }
+              if (!finding.description) {
+                finding.description = this.extractSection(section, ['description', 'summary', 'detail']);
+              }
+              if (!finding.impact) {
+                finding.impact = this.extractSection(section, ['impact']);
+              }
+              if (!finding.rootCause) {
+                finding.rootCause = this.extractSection(section, ['root cause', 'proof of concept', 'poc']);
+              }
+              if (!finding.recommendation) {
+                finding.recommendation = this.extractSection(section, ['recommendation', 'mitigation', 'fix']);
+              }
+              if (finding.targets?.length === 0) {
+                finding.targets = this.extractAffectedFiles(section);
+              }
 
-            // Regenerate markdown with enriched content
-            finding.markdown = this.generateMarkdown(finding);
+              // Regenerate markdown with enriched content
+              finding.markdown = this.generateMarkdown(finding);
+            }
           }
+        } else {
+          // If no findings from C4 report, parse directly from GitHub findings file
+          console.log(`[DatasetPreparer] No C4 report findings, parsing directly from ${file}`);
+          const parsedFindings = this.parseGitHubFindingsFile(content, findings.length + 1);
+          console.log(`[DatasetPreparer] Parsed ${parsedFindings.length} findings from ${file}`);
+          parsedFindings.forEach(finding => findings.push(finding));
         }
       } catch (error) {
         console.warn(`[DatasetPreparer] Failed to fetch ${file}:`, error);
       }
     }
+  }
+
+  /**
+   * Parse GitHub findings file content
+   */
+  private parseGitHubFindingsFile(content: string, startCounter: number = 1): Finding[] {
+    const findings: Finding[] = [];
+
+    // Split the content by findings (each starts with #)
+    const sections = content.split(/^#\s+/gm).filter(Boolean);
+
+    for (const section of sections) {
+      // Skip the note section at the beginning
+      if (section.toLowerCase().includes('note: not all issues')) {
+        continue;
+      }
+
+      // Extract severity
+      const severityMatch = section.match(/- \s*Severity:\s*(\w+)/i);
+      if (!severityMatch) {
+        continue;
+      }
+
+      const severityStr = severityMatch[1].trim().toLowerCase();
+
+      // Map severity
+      let severity: Severity = 'medium';
+      if (severityStr.includes('high') || severityStr.includes('critical')) {
+        severity = 'high';
+      } else if (severityStr.includes('medium')) {
+        severity = 'medium';
+      } else if (severityStr.includes('low')) {
+        severity = 'low';
+      }
+
+      // Extract title (everything before the first line break after #)
+      const titleEnd = section.indexOf('\n');
+      let title = section.slice(0, titleEnd).trim();
+
+      // Clean up title
+      title = title.replace(/^`+|`+$/g, '').trim();
+
+      // Generate ID
+      const id = `${severity.charAt(0).toUpperCase()}-${startCounter + findings.length}`;
+
+      const finding: Finding = {
+        id,
+        title,
+        severity,
+        targets: [],
+        description: '',
+        impact: '',
+        rootCause: '',
+        recommendation: '',
+        source: 'ground_truth',
+        category: undefined,
+        markdown: ''
+      };
+
+      // Extract targets from "Targets" section
+      const targetsMatch = section.match(/## Targets\n([\s\S]*?)(?=##|$)/i);
+      if (targetsMatch) {
+        const targetsText = targetsMatch[1];
+        const targets = targetsText.split('\n')
+          .map(line => line.replace(/^-+\s*/, '').trim())
+          .filter(line => line.length > 0);
+        finding.targets = targets;
+      }
+
+      // Extract sections
+      finding.description = this.extractSection(section, ['description', 'summary', 'detail']);
+      finding.impact = this.extractSection(section, ['impact']);
+      finding.rootCause = this.extractSection(section, ['root cause', 'proof of concept', 'poc']);
+      finding.recommendation = this.extractSection(section, ['recommendation', 'mitigation', 'fix']);
+
+      // If no targets from Targets section, extract from content
+      if (finding.targets.length === 0) {
+        finding.targets = this.extractAffectedFiles(section);
+      }
+
+      // Extract category
+      const category = this.extractCategory(section, title);
+      if (category) {
+        finding.category = category;
+      }
+
+      // Generate markdown
+      finding.markdown = this.generateMarkdown(finding);
+
+      findings.push(finding);
+    }
+
+    return findings;
   }
 
   /**
