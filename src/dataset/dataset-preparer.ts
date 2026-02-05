@@ -48,9 +48,31 @@ export interface PreparedDataset {
 
 export class DatasetPreparer {
   private dataDir: string;
+  private readonly CACHE_DURATION = 24 * 60 * 60 * 1000; // 1 day in milliseconds
 
   constructor(dataDir: string) {
     this.dataDir = dataDir;
+  }
+
+  /**
+   * Check if existing dataset is within cache duration
+   */
+  private async isDatasetCached(projectName: string): Promise<boolean> {
+    const datasetDir = path.join(this.dataDir, 'datasets', projectName);
+    const metadataPath = path.join(datasetDir, 'metadata.json');
+
+    try {
+      const metadataContent = await fs.readFile(metadataPath, 'utf-8');
+      const metadata = JSON.parse(metadataContent);
+
+      const preparedAt = new Date(metadata.preparedAt);
+      const now = new Date();
+      const age = now.getTime() - preparedAt.getTime();
+
+      return age < this.CACHE_DURATION;
+    } catch {
+      return false;
+    }
   }
 
   /**
@@ -58,6 +80,15 @@ export class DatasetPreparer {
    */
   async prepare(project: C4Project): Promise<PreparedDataset> {
     console.log(`[DatasetPreparer] Preparing dataset for ${project.name}...`);
+
+    // Check if cached version exists and is within 1 day
+    if (await this.isDatasetCached(project.name)) {
+      const cachedDataset = await this.loadDataset(project.name);
+      if (cachedDataset) {
+        console.log(`[DatasetPreparer] Using cached dataset (less than 1 day old)`);
+        return cachedDataset;
+      }
+    }
 
     // Step 1: Fetch findings from Code4rena report
     const findings = await this.fetchC4Report(project.name);

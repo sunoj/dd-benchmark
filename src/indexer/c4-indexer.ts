@@ -135,34 +135,50 @@ export class C4Indexer {
    * Fetch and parse ground truth findings for a project
    *
    * Priority:
-   * 1. Try Code4rena reports page (most reliable)
-   * 2. Fall back to GitHub findings files
+   * 1. Try local prepared dataset (fastest, most reliable)
+   * 2. Try Code4rena reports page
+   * 3. Fall back to GitHub findings files
    *
    * All findings are formatted to unified markdown format.
    */
   async getGroundTruth(project: C4Project): Promise<Finding[]> {
     let findings: Finding[] = [];
 
-    // Try Code4rena reports first
-    const reportFindings = await this.getC4ReportFindings(project.name);
-    if (reportFindings.length > 0) {
-      console.log(`[Indexer] Found ${reportFindings.length} findings from C4 report`);
-      findings = reportFindings;
-    } else {
-      // Fall back to GitHub findings files
-      const files = project.findingsFiles || (project.findingsFile ? [project.findingsFile] : []);
+    // Try local prepared dataset first
+    const datasetPath = path.join(this.cacheDir, '..', 'datasets', project.name, 'ground-truth.json');
+    try {
+      const datasetContent = await fs.readFile(datasetPath, 'utf-8');
+      findings = JSON.parse(datasetContent);
+      console.log(`[Indexer] Found ${findings.length} findings from local dataset`);
+    } catch (error) {
+      console.log(`[Indexer] Local dataset not found or invalid: ${(error as Error).message}`);
 
-      for (const file of files) {
-        const content = await this.getFileContent(project.name, file);
-        if (content) {
-          const parsed = this.parseFindingsMarkdown(content);
-          findings.push(...parsed);
+      // Try Code4rena reports next
+      const reportFindings = await this.getC4ReportFindings(project.name);
+      if (reportFindings.length > 0) {
+        console.log(`[Indexer] Found ${reportFindings.length} findings from C4 report`);
+        findings = reportFindings;
+      } else {
+        // Fall back to GitHub findings files
+        const files = project.findingsFiles || (project.findingsFile ? [project.findingsFile] : []);
+
+        for (const file of files) {
+          const content = await this.getFileContent(project.name, file);
+          if (content) {
+            const parsed = this.parseFindingsMarkdown(content);
+            findings.push(...parsed);
+          }
         }
       }
     }
 
-    // Format all findings to unified markdown
-    return findings.map(f => this.formatFindingMarkdown(f));
+    // Format all findings to unified markdown (if not already formatted)
+    return findings.map(f => {
+      if (f.markdown) {
+        return f;
+      }
+      return this.formatFindingMarkdown(f);
+    });
   }
 
   /**
